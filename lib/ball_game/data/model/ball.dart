@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class Ball extends CircleComponent
     with HasGameRef<BallGame>, CollisionCallbacks {
   static const double speed = 100.0;
+
   Vector2 direction;
 
   Ball({required Vector2 position})
@@ -43,18 +44,9 @@ class Ball extends CircleComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
+
     if (other is Ball) {
-      final Vector2 collisionNormal = (other.position - position).normalized();
-
-      final Vector2 relativeVelocity = direction - other.direction;
-      final double velocityAlongNormal = relativeVelocity.dot(collisionNormal);
-
-      if (velocityAlongNormal > 0) return;
-
-      const double restitution = 1; // Assuming a perfectly elastic collision
-      final double impulseMagnitude = -(1 + restitution) * velocityAlongNormal;
-      direction += collisionNormal * impulseMagnitude;
-      other.direction -= collisionNormal * impulseMagnitude;
+      direction = (position - other.position).normalized();
     }
   }
 }
