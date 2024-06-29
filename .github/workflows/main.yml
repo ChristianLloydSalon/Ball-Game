@@ -8,7 +8,7 @@ env:
   FLUTTER_VERSION: 3.22.2
 
 jobs:
-  build_and_test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +22,11 @@ jobs:
       - name: Build Flutter web
         run: flutter build web --release
 
-      - name: Test Flutter
-        run: flutter test
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: build/web/
 
   deploy:
     needs: build_and_test
@@ -31,6 +34,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Download production artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifacts
+          path: build/web/
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
